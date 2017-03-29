@@ -10,6 +10,7 @@
 #define Button_hpp
 
 #include <stdio.h>
+#include "ofMain.h"
 
 class Button
 {

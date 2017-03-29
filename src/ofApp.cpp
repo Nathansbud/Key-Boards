@@ -22,11 +22,25 @@ ofColor Yellow(0, 255, 255);
 ofColor Green(0, 255, 0);
 ofColor Blue(0, 0, 255);
 ofColor Orange(255, 140, 0);
+ofColor Cyan(224,255,255);
 string welcome = "Welcome to Key Boards!";
+string info = "haha information";
+
+void ofApp::ChangeColor(char type, ofColor color)
+{
+  if(type == 'b' || type == 'B')
+  {
+	ofBackground(color);
+  } else
+  {
+	ofSetColor(color);
+	ofFill();
+  }
+}
 
 void ofApp::setup()
 {
-  state = Title;
+  state = Game;
 }
 
 void ofApp::update(){
@@ -37,17 +51,29 @@ void ofApp::draw()
 {
   if(state == Title)
   {
-	ofBackground(Black);
-	ChangeColor(White);
+	ChangeColor('B', Black);
+	ChangeColor('T', White);
 	ofDrawBitmapString(welcome, ofGetWidth()/2 - (welcome.length())*4, ofGetHeight()/9);
   }
   
   if(state == Info)
   {
-	ofBackground(White);
-	ChangeColor(Black);
-	ofDrawBitmapString(info);
+	ChangeColor('B', White);
+	ChangeColor('T', Black);
+	ofDrawBitmapString(Info, ofGetWidth()/50, ofGetHeight()/30);
   }
+  
+  if(state == Game)
+  {
+	ChangeColor('B', White);
+  }
+	
+//  if(state == GameOver)
+//	{
+//	  ChangeColor('B' Cyan);
+//	  ChangeColor('T', Black);
+//	  ofDrawBitmapString("Haha you losted");
+//	}
 
 }
                                         
@@ -71,11 +97,6 @@ void ofApp::mouseMoved(int x, int y ){
 }
 
                                                                 
-void ofApp::mouseDragged(int x, int y, int button){
-
-}
-
-                                                                
 void ofApp::mousePressed(int x, int y, int button)
 {
 
@@ -87,59 +108,4 @@ void ofApp::mouseReleased(int x, int y, int button)
 
 }
 
-//void ofApp::GetColor(Colors color)
-//{
-//  switch(color)
-//  {
-//	case White:
-//	  ofSetColor(255, 255, 255);
-//	  break;
-//	case Black:
-//	  ofSetColor(0, 0, 0);
-//	  break;
-//	case Red:
-//	  ofSetColor(255, 0, 0);
-//	  break;
-//	case Orange:
-//	  ofSetColor(255, 140, 0);
-//	  break;
-//	case Yellow:
-//	  ofSetColor(0, 255, 255);
-//	  break;
-//	case Green:
-//	  ofSetColor(0, 255, 0);
-//	  break;
-//	case Blue:
-//	  ofSetColor(0, 0, 255);
-//	  break;
-//  }
-//}
-
-
-//                                                                
-//void ofApp::mouseEntered(int x, int y){
-//
-//}
-//
-//                                                                
-//void ofApp::mouseExited(int x, int y)
-//{
-//
-//}
-//
-//                                                                
-//void ofApp::windowResized(int w, int h){
-//
-//}
-//
-//                                                                
-//void ofApp::gotMessage(ofMessage msg)
-//{
-//
-//}
-//
-//                                                                
-//void ofApp::dragEvent(ofDragInfo dragInfo){
-//
-//}
 
