@@ -43,12 +43,13 @@ void ofApp::setup()
   state = Game;
 }
 
-void ofApp::update(){
-
+void ofApp::update()
+{
 }
 
 void ofApp::draw()
 {
+
   if(state == Title)
   {
 	ChangeColor('B', Black);
@@ -66,8 +67,11 @@ void ofApp::draw()
   if(state == Game)
   {
 	ChangeColor('B', White);
-  }
+	qwerty.Draw();
+	azerty.Draw();
 	
+  }
+  
 //  if(state == GameOver)
 //	{
 //	  ChangeColor('B' Cyan);
@@ -79,33 +83,73 @@ void ofApp::draw()
                                         
 void ofApp::keyPressed(int key)
 {
-		
-  keylog.open("keylog.txt");
-  keylog << key;
-  cout << key;
-  keylog.close();
+	keylog.open("loggedkeys.txt");
+	keyPress = key;
+	keylog << keyPress;
+	cout << keyPress;
+	keylog.close();
 }
 
-                                                                
-void ofApp::keyReleased(int key){
+/*
 
-}
+Note: As I seem to be having great difficulty doing the "code" work, this seems like an ample opportunity to do some design/ideation work rather than purely code-focused work...as I've seemingly been running headfirst into a brick wall for ages. Sooooo...some of this may be in psuedocode, but...
 
-                                                                
-void ofApp::mouseMoved(int x, int y ){
+"Spell List"
 
-}
-
-                                                                
-void ofApp::mousePressed(int x, int y, int button)
+switch(string) <- would be player input, find a method to parse through this; do strings work as Switch in C++?
 {
-
+  case "Derp": Ñ would it need to be defined for every case? Could case be ignored?
+  case "derp":
+	enemy.Stun(); Ñ what could stun potentially do? Potentially disable the enemy from sending things?
+	break;
+		OOOOOH! Could potentially cause enemy player's current word to be discarded
+  case "Shield"
+	if(cooldown == false)
+	{
+	  put up a "word" shield?
+	} else continue;
+	break;
+  case "Regeneration":
+	playerRegen = true; - could regain some health over time? Maybe while regen = true, regain at a rate of 2 hp per second
+	break;
+  case "Slash"
+	deal 5 damage to opponent, but triggers x effect to self
+  case "Hah!"
+	text pops up, "you think this is some kind of joke?"
+  case "Fireball" 
+	inflict effect burn onto opponent, deals dot?
+	could make enum { status effects }
+  case "Retalliate"
+   steals enemy last used ability?
+  
 }
 
-                                                                
-void ofApp::mouseReleased(int x, int y, int button)
-{
+*/
 
-}
+
+
+//void ofApp::keyReleased(int key)
+//{
+//
+//}
+//
+//                                                                
+//void ofApp::mouseMoved(int x, int y ){
+//
+//}
+//
+//                                                                
+//void ofApp::mousePressed(int x, int y, int button)
+//{
+//
+//}
+//
+//                                                                
+//void ofApp::mouseReleased(int x, int y, int button)
+//{
+//
+//}
+//
+//
 
 

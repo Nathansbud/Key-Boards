@@ -10,8 +10,7 @@
 #define Player_hpp
 
 #include <stdio.h>
-#include "ofApp.h"
-//#include "ofMain.h"
+#include "ofMain.h"
 
 class Player
 {
@@ -20,12 +19,20 @@ class Player
 	~Player();
 	void Update();
 	void Draw();
+	void InflictStatusEffect();
+	int CheckHP() {return _health};
+	float CheckDamage() {return _damage};
+	float CheckMoney() {return _money};
+	enum StatusEffects {Burn, Shield, Poison, Daze, Paralyze}
+	
   private:
 	int _health;
-	int _damage;
+	float _damage;
 	int _money;
 	int _player;
 	ofImage p1, p2;
+	ofVec2f _playerPos;
+
 };
 
 #endif /* Player_hpp */
