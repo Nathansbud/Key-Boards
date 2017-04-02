@@ -20,18 +20,25 @@ class Player
 	void Update();
 	void Draw();
 	void InflictStatusEffect();
-	int CheckHP() {return _health};
-	float CheckDamage() {return _damage};
-	float CheckMoney() {return _money};
-	enum StatusEffects {Burn, Shield, Poison, Daze, Paralyze}
+	
+	
+	int GetHP() {return _hp;}
+	float GetDMG() {return _damage;}
+	float GetMoney() {return _money;}
+	ofVec2f GetPos() {return _playerPos;}
+	
+
+//	enum StatusEffects {Burn, Shield, Poison, Daze, Paralyze};
 	
   private:
-	int _health;
-	float _damage;
-	int _money;
-	int _player;
-	ofImage p1, p2;
-	ofVec2f _playerPos;
+	void SetPos();
+	void SetStats(int hp, float damage, int money);
+	int _hp = 150;
+	float _damage; //Use?
+	int _money; //Offline mode/upgrades?
+	int _player; //Player #
+	ofImage p1, p2; //Qwerty/Azerty Images
+	ofVec2f _playerPos; //...duh
 
 };
 

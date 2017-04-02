@@ -25,6 +25,9 @@ ofColor Orange(255, 140, 0);
 ofColor Cyan(224,255,255);
 string welcome = "Welcome to Key Boards!";
 string info = "haha information";
+string submittedWord; //Word used for
+bool wordSubmit;
+int rot = 0;
 
 void ofApp::ChangeColor(char type, ofColor color)
 {
@@ -41,14 +44,58 @@ void ofApp::ChangeColor(char type, ofColor color)
 void ofApp::setup()
 {
   state = Game;
+  ofSetDrawBitmapMode(OF_BITMAPMODE_MODEL);
+//  udpConnection.Create();
+//  udpConnection.Connect("127.0.0.1",11999);
+//  udpConnection.SetNonBlocking(true);
+//  
 }
 
 void ofApp::update()
 {
+
 }
 
 void ofApp::draw()
 {
+  
+  /*[Game]*/
+  
+  if(state == Game)
+  {
+	ChangeColor('B', White);
+	
+	ground.Draw();
+	qwerty.Draw();
+	azerty.Draw();
+	
+	ofPushMatrix();
+	ofTranslate(stringPos + 200);
+	ofRotateZ(rot);
+	ofDrawBitmapStringHighlight(keyPress, 0, 0);
+	ofPopMatrix();
+	
+	if(wordSubmit)
+	{
+	  if(stringPos.x < azerty.GetPos().x - 200)
+		stringPos.x += 10;
+	  else if(stringPos.x > azerty.GetPos().x - 200)
+	  {
+		if(keyPress == "a")
+		{
+		  cout << " m e m e ";
+		} else cout << ":(";
+		
+		stringPos.x = qwerty.GetPos().x;
+		cout << azerty.GetHP();
+		wordSubmit = false;
+	  }
+	}
+	
+	rot += 10;
+  }
+  
+  /*[Title Screen]*/
 
   if(state == Title)
   {
@@ -57,6 +104,8 @@ void ofApp::draw()
 	ofDrawBitmapString(welcome, ofGetWidth()/2 - (welcome.length())*4, ofGetHeight()/9);
   }
   
+  /*[Info Screen]*/
+  
   if(state == Info)
   {
 	ChangeColor('B', White);
@@ -64,13 +113,8 @@ void ofApp::draw()
 	ofDrawBitmapString(Info, ofGetWidth()/50, ofGetHeight()/30);
   }
   
-  if(state == Game)
-  {
-	ChangeColor('B', White);
-	qwerty.Draw();
-	azerty.Draw();
-	
-  }
+  /*[Game Over Screen???]*/
+
   
 //  if(state == GameOver)
 //	{
@@ -83,73 +127,46 @@ void ofApp::draw()
                                         
 void ofApp::keyPressed(int key)
 {
-	keylog.open("loggedkeys.txt");
-	keyPress = key;
-	keylog << keyPress;
-	cout << keyPress;
-	keylog.close();
-}
-
-/*
-
-Note: As I seem to be having great difficulty doing the "code" work, this seems like an ample opportunity to do some design/ideation work rather than purely code-focused work...as I've seemingly been running headfirst into a brick wall for ages. Sooooo...some of this may be in psuedocode, but...
-
-"Spell List"
-
-switch(string) <- would be player input, find a method to parse through this; do strings work as Switch in C++?
-{
-  case "Derp": Ñ would it need to be defined for every case? Could case be ignored?
-  case "derp":
-	enemy.Stun(); Ñ what could stun potentially do? Potentially disable the enemy from sending things?
-	break;
-		OOOOOH! Could potentially cause enemy player's current word to be discarded
-  case "Shield"
-	if(cooldown == false)
-	{
-	  put up a "word" shield?
-	} else continue;
-	break;
-  case "Regeneration":
-	playerRegen = true; - could regain some health over time? Maybe while regen = true, regain at a rate of 2 hp per second
-	break;
-  case "Slash"
-	deal 5 damage to opponent, but triggers x effect to self
-  case "Hah!"
-	text pops up, "you think this is some kind of joke?"
-  case "Fireball" 
-	inflict effect burn onto opponent, deals dot?
-	could make enum { status effects }
-  case "Retalliate"
-   steals enemy last used ability?
+  if(key != OF_KEY_BACKSPACE && key != OF_KEY_RETURN && key != OF_KEY_SHIFT)
+  {
+	keyPress.push_back(key);
+  }
   
+  if(key == OF_KEY_BACKSPACE)
+  {
+	keyPress.pop_back();
+  }
+	
+  keylog.open("loggedkeys.txt");
+  keylog << keyPress << endl;
+//cout << keyPress << endl;
+  keylog.close();
+	
+  if(key == OF_KEY_RETURN) //End sending
+  {
+	  tempWord = keyPress; //Set submitted word to keyPress, in order to reset
+	  wordSubmitted = tempWord;
+	  wordSubmit = true; //Word has been sent
+	  keyPress.clear(); //Clear out word
+  }
 }
 
-*/
 
+void ofApp::keyReleased(int key)
+{
 
+}
+                                                                
+void ofApp::mousePressed(int x, int y, int button)
+{
 
-//void ofApp::keyReleased(int key)
-//{
-//
-//}
-//
-//                                                                
-//void ofApp::mouseMoved(int x, int y ){
-//
-//}
-//
-//                                                                
-//void ofApp::mousePressed(int x, int y, int button)
-//{
-//
-//}
-//
-//                                                                
-//void ofApp::mouseReleased(int x, int y, int button)
-//{
-//
-//}
-//
-//
+}
+
+                                                                
+void ofApp::mouseReleased(int x, int y, int button)
+{
+
+}
+
 
 

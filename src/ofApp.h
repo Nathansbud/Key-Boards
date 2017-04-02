@@ -2,6 +2,7 @@
 
 #include "ofMain.h"
 #include "Player.hpp"
+#include "Ground.hpp"
 
 class ofApp : public ofBaseApp{
 
@@ -12,7 +13,6 @@ class ofApp : public ofBaseApp{
 
 		void keyPressed(int key);
 		void keyReleased(int key);
-		void mouseMoved(int x, int y );
 		void mousePressed(int x, int y, int button);
 		void mouseReleased(int x, int y, int button);
 		
@@ -22,4 +22,17 @@ class ofApp : public ofBaseApp{
   
 		Player qwerty = Player(1);
 		Player azerty = Player(2);
+		Ground ground = Ground();
+		
+		string keyPress;
+		
+		ofVec2f stringPos = qwerty.GetPos();
+		
+//		string submittedPress;
+		
+		/* Global Colors */
+
+  
+		
+		
 };
