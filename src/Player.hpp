@@ -21,11 +21,14 @@ class Player
 	void Draw();
 	void InflictStatusEffect();
 	
-	
 	int GetHP() {return _hp;}
 	float GetDMG() {return _damage;}
 	float GetMoney() {return _money;}
 	ofVec2f GetPos() {return _playerPos;}
+	void ChangeHP(int amount);
+	void SetHP(int amount) {_hp = amount;}
+	string HP;
+	
 	
 
 //	enum StatusEffects {Burn, Shield, Poison, Daze, Paralyze};

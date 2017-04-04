@@ -15,7 +15,7 @@
 class Button
 {
   public:
-	Button();
+	Button(string _labelText, float posX, float posY, int goesTo, string buttonType);
 	~Button();
 	
 	void Update();

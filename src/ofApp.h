@@ -16,9 +16,11 @@ class ofApp : public ofBaseApp{
 		void mousePressed(int x, int y, int button);
 		void mouseReleased(int x, int y, int button);
 		
-		enum States { Title, Info, Game, GameOver };
-  
-		void ChangeColor(char type, ofColor color);
+		void EvaluateWord();
+
+
+		void Restart();
+		void SendWord();
   
 		Player qwerty = Player(1);
 		Player azerty = Player(2);
@@ -28,6 +30,8 @@ class ofApp : public ofBaseApp{
 		
 		ofVec2f stringPos = qwerty.GetPos();
 		
+		ofSoundPlayer sickNastyTracks;
+
 //		string submittedPress;
 		
 		/* Global Colors */

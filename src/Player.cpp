@@ -36,14 +36,18 @@ void Player::Draw()
 
 Player::~Player()
 {
-
+  
 }
 
 void Player::Update()
 {
-  
+   HP = to_string(GetHP());
 }
 
+void Player::ChangeHP(int amount)
+{
+  _hp += amount;
+}
 
 
 void Player::SetStats(int hp, float damage, int money)
