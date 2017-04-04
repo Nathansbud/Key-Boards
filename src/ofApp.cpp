@@ -213,8 +213,14 @@ void ofApp::EvaluateWord()
 
   if(input.at(wordLoc) == "Attack" || input.at(wordLoc) == "attack")
   {
-  	azerty.ChangeHP(-1);
-	cout << azerty.GetHP();
+	if(input.at(wordLoc - 1) == "combo")
+	{
+	  azerty.ChangeHP(-4 * qwerty.GetDMG());
+	} else
+	{
+	  azerty.ChangeHP(-1 * qwerty.GetDMG());
+	  cout << azerty.GetHP();
+	}
   }
   
   //Status Effects//
@@ -260,6 +266,11 @@ void ofApp::EvaluateWord()
   if(input.at(wordLoc) == "murder") //debug
   {
 	azerty.SetHP(0);
+  }
+  
+  if(input.at(wordLoc) == "combo")
+  {
+	
   }
   
   
