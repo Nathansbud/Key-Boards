@@ -17,20 +17,28 @@ class ofApp : public ofBaseApp{
 		void mouseReleased(int x, int y, int button);
 		
 		void EvaluateWord();
-
-
-		void Restart();
 		void SendWord();
-  
-		Player qwerty = Player(1);
-		Player azerty = Player(2);
+		
+  		enum States {Title, Info, Game, Win, GameOver};
+		States state;
+
+  		void SetState(States newState) {state == newState;}
+		void InitializeState(States newState);
+
+
+		Player qwerty = Player(1, 100, 1.0);
+		Player azerty = Player(2, 100, 1.0);
 		Ground ground = Ground();
 		
 		string keyPress;
 		
 		ofVec2f stringPos = qwerty.GetPos();
+	
+		ofSoundPlayer music[5];
 		
-		ofSoundPlayer sickNastyTracks;
+		enum Words {Slash, Strike, Fireball, Shield, Stun, Daze, Confuse, Derp, Poison};
+		Words word;
+
 
 //		string submittedPress;
 		

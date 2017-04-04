@@ -8,10 +8,11 @@
 
 #include "Player.hpp"
 
-Player::Player(int player)
+Player::Player(int player, int hp, float dmg)
 {
   _player = player;
   SetPos();
+  SetStats(hp, dmg);
   p1.load("images/Qwerty.png");
   p2.load("images/Azerty.png");
 }
@@ -50,9 +51,9 @@ void Player::ChangeHP(int amount)
 }
 
 
-void Player::SetStats(int hp, float damage, int money)
+void Player::SetStats(int hp, float dmg)
 {
   _hp = hp;
-  _damage = damage;
-  _money = money;
+  _damage = dmg;
+//  _money = money;
 }

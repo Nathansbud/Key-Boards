@@ -1,7 +1,7 @@
 /*
 Welcome, all...to Key Boards!
 
-Initially inspired by a desire to steal all the passwords—only kidding—this project was originally a mere keylogger...er, idea for a keylogger. But the winds of creativity blew once more, and Key Boards was born.
+Initially inspired by a desire to steal all the passwords! Only kidding� this project was originally a mere keylogger...er, idea for a keylogger. But the winds of creativity blew once more, and Key Boards was born.
 
 In Key Boards, the player is tasked with the control of one of two characters: Qwert, and Azert. Creative names? I think so! Duke it out in this keyboard-inspired frenzy, flinging characters at strings at one another in order to prove once and for all...who truly holds the role of Warrior (get it? Because Keyboard Warrior? Hahah jokes)?
 
@@ -16,6 +16,8 @@ Reference to my brain:
 
 #include "ofApp.h"
 #include <fstream>
+#include <time.h>
+using namespace std;
 
 ofColor Black(0, 0, 0);
 ofColor White(255, 255, 255);
@@ -31,12 +33,9 @@ string submittedWord; //Word used for
 int wordLoc;
 bool wordSubmit, restart, fusrodahd;
 int rot = 0;
-enum States {Title, Info, Game, Win, GameOver};
-enum Words {Slash, Strike, Fireball, Shield, Stun, Daze, Confuse, Derp, Poison};
+int currentSong = 0;
 vector<string> input;
-
-States state;
-Words word;
+clock_t waitTime;
 
 //void ofApp::ChangeColor(char type, ofColor color) //This function is a whole world of broken. TBF
 //{
@@ -52,9 +51,14 @@ Words word;
 void ofApp::setup()
 {
   state = Game; //Should be changed to Title once implemented
-//  sickNastyTracks.load("All Star.mp3");
-//  sickNastyTracks.setLoop(true);
-//  sickNastyTracks.play();
+  music[0].load("music/Acid Nova Dreams.mp3");
+  music[1].load("music/All Star.mp3");
+  music[2].load("music/You Reposted in the Wrong Neighborhood.mp3");
+  music[3].load("music/Shooting Stars.mp3");
+  music[4].load("music/Never Gonna Give You Up.mp3");
+
+  music[currentSong].setLoop(true);
+  music[currentSong].play();
   input.push_back("Begin Input. (Yeah, I see you there, trying to access null)"); //Vector 0, to ensure functions that call wordLoc - 1 don't break. Anything calling wordLoc - 2 might also break if called as first function. TBF.
   wordLoc = 0;
   ofSetDrawBitmapMode(OF_BITMAPMODE_MODEL);
@@ -139,6 +143,12 @@ void ofApp::draw()
 	ofBackground(Red);
 	ofDrawBitmapString("A WinRar is You!", ofGetWidth()/2, ofGetHeight()/2); //Button TBI.
   }
+  
+  if(!music[currentSong].isPlaying())
+  {
+	music[0].setLoop(true);
+	music[0].play();
+  }
 }
                                         
 void ofApp::keyPressed(int key)
@@ -189,7 +199,7 @@ void ofApp::keyPressed(int key)
 	{
 	  case 'R':
 	  case 'r':
-		Restart();
+		InitializeState(Game);
 		state == Game;
 	}
   }
@@ -199,17 +209,59 @@ void ofApp::EvaluateWord()
 {
   //Note to future me: you can do magical thiiiings. Never call wordLoc that doesn't exist. Yes, duh, you can't call wordLoc + 1. That is dumb. You CAN, however, call wordLoc - 1. Combos, babyyyyy. TBI.
 
+  //Attacks//
+
   if(input.at(wordLoc) == "Attack" || input.at(wordLoc) == "attack")
   {
   	azerty.ChangeHP(-1);
 	cout << azerty.GetHP();
-
+  }
+  
+  //Status Effects//
+  
+  
+  //Defense//
+  
+  if(input.at(wordLoc) == "Shield" || input.at(wordLoc) == "shield")
+  {
+  }
+  
+  if(input.at(wordLoc) == "Heal" || input.at(wordLoc) == "heal")
+  {
+	qwerty.ChangeHP(5);
+  }
+  
+  if(input.at(wordLoc) == "poison" || input.at(wordLoc) == "venom")
+  {
+	
+  }
+  
+  
+  
+  
+  
+  if(input.at(wordLoc) == "Memes" || input.at(wordLoc) == "memes")
+  {
+	music[currentSong].stop();
+	currentSong = (int)ofRandom(1, 5);
+	music[currentSong].play();
+  }
+  
+  if(input.at(wordLoc) == "no more memes" || input.at(wordLoc) == "nomorememes")
+  {
+	if(currentSong != 0)
+	{
+	  music[currentSong].stop();
+	  currentSong = 0;
+	  music[currentSong].play();
+	}
   }
   
   if(input.at(wordLoc) == "murder") //debug
   {
 	azerty.SetHP(0);
   }
+  
   
   if(keyPress == "Fus ro dah" || keyPress == "fus ro dah" || keyPress == "fusrodah" || keyPress == "FUSRODAH" || keyPress == "Fusrodah")
   {
@@ -256,11 +308,25 @@ void ofApp::SendWord()
   }
 }
 
-void ofApp::Restart()
+void ofApp::InitializeState(States newState)
 {
-  azerty = Player(2);
-  qwerty = Player(1);
+
+  switch(newState)
+  {
+	case Game:
+	  break;
+	case Title:
+	  break;
+	case GameOver:
+	  break;
+	case Win:
+	  break;
+	case Info:
+	  break;
+  }
 }
+
+
 
 
 

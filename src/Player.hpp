@@ -15,7 +15,7 @@
 class Player
 {
   public:
-	Player(int player);
+	Player(int player, int hp, float damage);
 	~Player();
 	void Update();
 	void Draw();
@@ -35,7 +35,7 @@ class Player
 	
   private:
 	void SetPos();
-	void SetStats(int hp, float damage, int money);
+	void SetStats(int hp, float damage);
 	int _hp = 150;
 	float _damage; //Use?
 	int _money; //Offline mode/upgrades?
