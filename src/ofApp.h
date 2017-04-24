@@ -3,6 +3,7 @@
 #include "ofMain.h"
 #include "Player.hpp"
 #include "Ground.hpp"
+#include "ofxNetwork.h"
 
 class ofApp : public ofBaseApp{
 
@@ -12,7 +13,6 @@ class ofApp : public ofBaseApp{
 		void draw();
 
 		void keyPressed(int key);
-		void keyReleased(int key);
 		void mousePressed(int x, int y, int button);
 		void mouseReleased(int x, int y, int button);
 		
@@ -25,26 +25,29 @@ class ofApp : public ofBaseApp{
   		void SetState(States newState) {state == newState;}
 		void InitializeState(States newState);
 
-
 		Player qwerty = Player(1, 100, 1.0);
 		Player azerty = Player(2, 100, 1.0);
+		
+		Player *p1 = &qwerty;
+		Player *p2 = &azerty;
+		
+		
 		Ground ground = Ground();
 		
 		string keyPress;
+		string ip;
 		
 		ofVec2f stringPos = qwerty.GetPos();
 	
 		ofSoundPlayer music[5];
 		
-		enum Words {Slash, Strike, Fireball, Shield, Stun, Daze, Confuse, Derp, Poison};
-		Words word;
-
-
-//		string submittedPress;
+		ofTimer poison;
 		
-		/* Global Colors */
-
-  
+		void ServerSetup();
+		void Server();
+		void Client();
 		
+		ofxUDPManager s;
+		ofxUDPManager c;
 		
 };

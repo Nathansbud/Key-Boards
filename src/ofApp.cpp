@@ -17,63 +17,50 @@ Reference to my brain:
 #include "ofApp.h"
 #include <fstream>
 #include <time.h>
-using namespace std;
+#include <chrono>
+#include <stdio.h>
 
-ofColor Black(0, 0, 0);
-ofColor White(255, 255, 255);
-ofColor Red = (255, 0, 0);
-ofColor Yellow(0, 255, 255);
+ofColor Red(255, 0, 0);
 ofColor Green(0, 255, 0);
 ofColor Blue(0, 0, 255);
-ofColor Orange(255, 140, 0);
-ofColor Cyan(224,255,255);
-string welcome = "Welcome to Key Boards!";
-string info = "haha information";
-string submittedWord; //Word used for
-int wordLoc;
-bool wordSubmit, restart, fusrodahd;
-int rot = 0;
-int currentSong = 0;
-vector<string> input;
-clock_t waitTime;
 
-//void ofApp::ChangeColor(char type, ofColor color) //This function is a whole world of broken. TBF
-//{
-//  if(type == 'b' || type == 'B')
-//  {
-//	ofBackground(color);
-//  } else
-//  {
-//	ofSetColor(color);
-//  }
-//}
+int wordLoc;
+bool wordSubmit, fusrodahd;
+int rot;
+int currentSong;
+vector<string> input;
+vector<string> opponentInput;
+long nanosecond = 100000000;
+static int ticks;
+//std::chrono::duration<3> poison;
+//chrono::duration<std::chrono::seconds> wait(5);
 
 void ofApp::setup()
 {
+  ofSetFrameRate(60);
   state = Game; //Should be changed to Title once implemented
+  currentSong = 0;
   music[0].load("music/Acid Nova Dreams.mp3");
   music[1].load("music/All Star.mp3");
   music[2].load("music/You Reposted in the Wrong Neighborhood.mp3");
   music[3].load("music/Shooting Stars.mp3");
   music[4].load("music/Never Gonna Give You Up.mp3");
-
+  
   music[currentSong].setLoop(true);
   music[currentSong].play();
+  
   input.push_back("Begin Input. (Yeah, I see you there, trying to access null)"); //Vector 0, to ensure functions that call wordLoc - 1 don't break. Anything calling wordLoc - 2 might also break if called as first function. TBF.
+  opponentInput.push_back("Begin Input, except it's actually the opponent. I SEE YOU THERE, STILL TRYING TO ACCESS NULL!");
   wordLoc = 0;
   ofSetDrawBitmapMode(OF_BITMAPMODE_MODEL);
-//  udpConnection.Create();
-//  udpConnection.Connect("127.0.0.1",11999);
-//  udpConnection.SetNonBlocking(true);
-//
 }
 
 void ofApp::update()
 {
-  qwerty.Update();
-  azerty.Update();
+  p1->Update();
+  p2->Update();
   
-  if(azerty.GetHP() == 0)
+  if(p2->GetHP() == 0)
   {
 	state = Win;
   }
@@ -81,7 +68,7 @@ void ofApp::update()
 
 void ofApp::draw()
 {
-  
+ 
   /*[Game]*/
   
   if(state == Game)
@@ -91,13 +78,14 @@ void ofApp::draw()
 	ofSetColor(255);
 	
 	ground.Draw();
-	qwerty.Draw();
-	azerty.Draw();
+	p1->Draw();
+	p2->Draw();
 	
 	ofSetColor(0);
-	ofDrawBitmapStringHighlight(keyPress, 300, 700);
-	ofDrawBitmapStringHighlight("HP: " + qwerty.HP, 150, 450);
-	ofDrawBitmapStringHighlight("HP: " + azerty.HP, 1250, 450);
+	if(keyPress != "")
+	  ofDrawBitmapStringHighlight(keyPress, 300, 700);
+	ofDrawBitmapStringHighlight("HP: " + p1->HP, 150, 450);
+	ofDrawBitmapStringHighlight("HP: " + p2->HP, 1250, 450);
 	
 	
 	
@@ -106,37 +94,8 @@ void ofApp::draw()
 	  SendWord();
 	}
 	
-	rot += 10;
+	rot += 12;
   }
-  
-  
-  /*[Title Screen]*/ //TBI
-
-  if(state == Title)
-  {
-//	ChangeColor('B', Black);
-//	ChangeColor('T', White);
-	ofDrawBitmapString(welcome, ofGetWidth()/2 - (welcome.length())*4, ofGetHeight()/9);
-  }
-  
-  /*[Info Screen]*/
-  
-  if(state == Info) //TBI
-  {
-//	ChangeColor('B', White);
-//	ChangeColor('T', Black);
-	ofDrawBitmapString(Info, ofGetWidth()/50, ofGetHeight()/30);
-  }
-  
-  /*[Game Over Screen???]*/
-
-  
-//  if(state == GameOver) //TBI, on networking*
-//	{
-//	  ChangeColor('B' Cyan);
-//	  ChangeColor('T', Black);
-//	  ofDrawBitmapString("Haha you losted");
-//	}
 
   if(state == Win)
   {
@@ -177,14 +136,15 @@ void ofApp::keyPressed(int key)
 	  
 	  case OF_KEY_TAB:
 		keyPress.clear();
-		break;
+		break;		
+		
 		
 	  case 16:
 		break;
 		
 	  default:
 	  {
-		if(keyPress.length() < 15)
+		if(key >= 32 && key <= 126 && keyPress.length() < 30)
 		{
 		  keyPress += (char)key;
 		}
@@ -215,11 +175,11 @@ void ofApp::EvaluateWord()
   {
 	if(input.at(wordLoc - 1) == "combo")
 	{
-	  azerty.ChangeHP(-4 * qwerty.GetDMG());
+	  p2->ChangeHP(-4 * p1->GetDMG());
 	} else
 	{
-	  azerty.ChangeHP(-1 * qwerty.GetDMG());
-	  cout << azerty.GetHP();
+	  p1->ChangeHP(-1 * p1->GetDMG());
+	  cout << p2->GetHP();
 	}
   }
   
@@ -234,17 +194,13 @@ void ofApp::EvaluateWord()
   
   if(input.at(wordLoc) == "Heal" || input.at(wordLoc) == "heal")
   {
-	qwerty.ChangeHP(5);
+	p1->ChangeHP(5);
   }
   
   if(input.at(wordLoc) == "poison" || input.at(wordLoc) == "venom")
   {
-	
+	p2->SetEffects(Player::Poisoned);
   }
-  
-  
-  
-  
   
   if(input.at(wordLoc) == "Memes" || input.at(wordLoc) == "memes")
   {
@@ -265,12 +221,7 @@ void ofApp::EvaluateWord()
   
   if(input.at(wordLoc) == "murder") //debug
   {
-	azerty.SetHP(0);
-  }
-  
-  if(input.at(wordLoc) == "combo")
-  {
-	
+	p2->SetHP(0);
   }
   
   
@@ -283,12 +234,6 @@ void ofApp::EvaluateWord()
 
 }
 
-
-void ofApp::keyReleased(int key)
-{
-
-}
-                                                                
 void ofApp::mousePressed(int x, int y, int button)
 {
 
@@ -309,12 +254,12 @@ void ofApp::SendWord()
   ofDrawBitmapStringHighlight(input.at(wordLoc), 0, 0);
   ofPopMatrix();
   
-  if(stringPos.x < azerty.GetPos().x - 200)
+  if(stringPos.x < p2->GetPos().x - 200)
 	stringPos.x += 10;
-  else if(stringPos.x > azerty.GetPos().x - 200)
+  else if(stringPos.x > p2->GetPos().x - 200)
   {
 	EvaluateWord();
-	stringPos.x = qwerty.GetPos().x;
+	stringPos.x = p1->GetPos().x;
 	wordSubmit = false;
   }
 }
@@ -337,8 +282,27 @@ void ofApp::InitializeState(States newState)
   }
 }
 
+void ofApp::ServerSetup()
+{
+    s.Create();
+    s.SetEnableBroadcast(true);
+    s.Connect("127.0.0.1", 12345);
+    s.SetNonBlocking(true);
+}
 
+void ofApp::Server()
+{
+  string word = keyPress;
+  s.Send(keyPress.c_str(), keyPress.length());
+}
 
+void ofApp::Client()
+{
+  char text[30];
+  c.Receive(text, 30);
+  string data = text;
+  opponentInput.push_back(text);
+}
 
 
 

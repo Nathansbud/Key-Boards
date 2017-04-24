@@ -21,6 +21,13 @@ class Player
 	void Draw();
 	void InflictStatusEffect();
 	
+	bool isPoisoned();
+	bool isStunned();
+	bool isBurning();
+	bool isBleeding();
+	
+	void CheckStatusEffects();
+	
 	int GetHP() {return _hp;}
 	float GetDMG() {return _damage;}
 	float GetMoney() {return _money;}
@@ -29,19 +36,31 @@ class Player
 	void SetHP(int amount) {_hp = amount;}
 	string HP;
 	
+	enum StatusEffects
+	{
+	  Poisoned = 1 << 0,
+	  Stunned = 1 << 1,
+	  Burning = 1 << 2,
+	  Bleeding = 1 << 3
+	};
 	
-
-//	enum StatusEffects {Burn, Shield, Poison, Daze, Paralyze};
-	
+	void SetEffects(StatusEffects effects);
+	void RemoveEffects(StatusEffects effects);
+		
   private:
 	void SetPos();
 	void SetStats(int hp, float damage);
+	
+	int _statusFlags;
 	int _hp = 150;
 	float _damage; //Use?
 	int _money; //Offline mode/upgrades?
 	int _player; //Player #
 	ofImage p1, p2; //Qwerty/Azerty Images
 	ofVec2f _playerPos; //...duh
+	bool _poisoned;
+	bool _burning;
+	bool _stunned;
 
 };
 
