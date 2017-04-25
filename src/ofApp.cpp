@@ -68,6 +68,8 @@ void ofApp::update()
 
 void ofApp::draw()
 {
+
+  cout << p1->GetEffects() << endl;
  
   /*[Game]*/
   
@@ -221,7 +223,7 @@ void ofApp::EvaluateWord()
   
   if(input.at(wordLoc) == "murder") //debug
   {
-	p2->SetHP(0);
+	p2->ChangeHP(-p2->GetHP());
   }
   
   

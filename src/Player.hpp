@@ -33,7 +33,7 @@ class Player
 	float GetMoney() {return _money;}
 	ofVec2f GetPos() {return _playerPos;}
 	void ChangeHP(int amount);
-	void SetHP(int amount) {_hp = amount;}
+	int GetEffects() {return _statusFlags;}
 	string HP;
 	
 	enum StatusEffects
@@ -61,7 +61,7 @@ class Player
 	bool _poisoned;
 	bool _burning;
 	bool _stunned;
-
+	void SetHP(int amount) {_hp = amount;}
 };
 
 #endif /* Player_hpp */

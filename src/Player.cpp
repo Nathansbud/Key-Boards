@@ -18,6 +18,12 @@ Player::Player(int player, int hp, float dmg)
   SetStats(hp, dmg);
   p1.load("images/Qwerty.png");
   p2.load("images/Azerty.png");
+  
+  _statusFlags = 0;
+  _poisoned = false;
+  _stunned = false;
+  _burning = false;
+  
 }
 
 void Player::SetPos()
@@ -56,13 +62,10 @@ void Player::ChangeHP(int amount)
 
 void Player::CheckStatusEffects()
 {
+//  static int ticks = 300;
   if(isPoisoned())
-	int start = ofGetFrameNum();
-	if(ofGetFrameNum() - poisonDuration >= 300)
-	{
-	  ChangeHP(-5);
-	  poisonDuration = ofGetFrameNum();
-	}
+	
+	ChangeHP(-5);
   if(isBurning())
 	ChangeHP(-2);
 }

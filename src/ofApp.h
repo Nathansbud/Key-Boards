@@ -40,9 +40,7 @@ class ofApp : public ofBaseApp{
 		ofVec2f stringPos = qwerty.GetPos();
 	
 		ofSoundPlayer music[5];
-		
-		ofTimer poison;
-		
+				
 		void ServerSetup();
 		void Server();
 		void Client();
