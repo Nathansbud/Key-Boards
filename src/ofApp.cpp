@@ -1,7 +1,7 @@
 /*
 Welcome, all...to Key Boards!
 
-Initially inspired by a desire to steal all the passwords! Only kiddingâ this project was originally a mere keylogger...er, idea for a keylogger. But the winds of creativity blew once more, and Key Boards was born.
+Initially inspired by a desire to steal all the passwords! Only kiddingâ€š this project was originally a mere keylogger...er, idea for a keylogger. But the winds of creativity blew once more, and Key Boards was born.
 
 In Key Boards, the player is tasked with the control of one of two characters: Qwert, and Azert. Creative names? I think so! Duke it out in this keyboard-inspired frenzy, flinging characters at strings at one another in order to prove once and for all...who truly holds the role of Warrior (get it? Because Keyboard Warrior? Hahah jokes)?
 
@@ -25,13 +25,17 @@ ofColor Green(0, 255, 0);
 ofColor Blue(0, 0, 255);
 
 int wordLoc;
-bool wordSubmit, fusrodahd;
-int rot;
+bool wordSubmit;
 int currentSong;
 vector<string> input;
 vector<string> opponentInput;
 long nanosecond = 100000000;
 static int ticks;
+static string delimiter[] = {"1:", "2:","3:","4:"};
+
+locale loc;
+//string delimiter = "|";
+
 //std::chrono::duration<3> poison;
 //chrono::duration<std::chrono::seconds> wait(5);
 
@@ -40,6 +44,12 @@ void ofApp::setup()
   ofSetFrameRate(60);
   state = Game; //Should be changed to Title once implemented
   currentSong = 0;
+  spd = ofGetWidth()*0.007;
+  slowSpd = spd/2;
+  fastSpd = spd*2;
+  vSlowSpd = spd/3;
+  vFastSpd = spd*3;
+  
   music[0].load("music/Acid Nova Dreams.mp3");
   music[1].load("music/All Star.mp3");
   music[2].load("music/You Reposted in the Wrong Neighborhood.mp3");
@@ -53,10 +63,13 @@ void ofApp::setup()
   opponentInput.push_back("Begin Input, except it's actually the opponent. I SEE YOU THERE, STILL TRYING TO ACCESS NULL!");
   wordLoc = 0;
   ofSetDrawBitmapMode(OF_BITMAPMODE_MODEL);
+  ServerSetup();
+//  ClientSetup();
 }
 
 void ofApp::update()
 {
+  Server();
   p1->Update();
   p2->Update();
   
@@ -68,9 +81,7 @@ void ofApp::update()
 
 void ofApp::draw()
 {
-
-  cout << p1->GetEffects() << endl;
- 
+  
   /*[Game]*/
   
   if(state == Game)
@@ -88,6 +99,7 @@ void ofApp::draw()
 	  ofDrawBitmapStringHighlight(keyPress, 300, 700);
 	ofDrawBitmapStringHighlight("HP: " + p1->HP, 150, 450);
 	ofDrawBitmapStringHighlight("HP: " + p2->HP, 1250, 450);
+	ofDrawBitmapStringHighlight("S E R V E R", ofGetWidth()/2, ofGetHeight()/10);
 	
 	
 	
@@ -96,7 +108,6 @@ void ofApp::draw()
 	  SendWord();
 	}
 	
-	rot += 12;
   }
 
   if(state == Win)
@@ -128,9 +139,11 @@ void ofApp::keyPressed(int key)
 	  {
 		if(keyPress != "")
 		{
+		  rot = 0;
 		  wordLoc += 1; //Increases wordLoc for any function trying to call it
 		  input.push_back(keyPress);
 		  wordSubmit = true;
+		  Server();
 		  keyPress.clear();
 		}
 		break;
@@ -169,82 +182,144 @@ void ofApp::keyPressed(int key)
 
 void ofApp::EvaluateWord()
 {
-  //Note to future me: you can do magical thiiiings. Never call wordLoc that doesn't exist. Yes, duh, you can't call wordLoc + 1. That is dumb. You CAN, however, call wordLoc - 1. Combos, babyyyyy. TBI.
+	string eval;
+	string evalPrev;
+	string caseEval = input.at(wordLoc);
+	string caseEvalPrev = input.at(wordLoc);
+	
+	for (string::size_type i=0; i < input.at(wordLoc).length(); ++i)
+	{
+	   eval += std::tolower(input.at(wordLoc)[i],loc);
+  //	 if(eval.at(i) == ' ') //ignore space code?
+  //	 {
+  //	
+  //	 }
+	}
+	
+	for(string::size_type i=0; i < input.at(wordLoc - 1).length(); ++i)
+		evalPrev += std::tolower(input.at(wordLoc - 1)[i], loc);
 
-  //Attacks//
+	//Note to future me: you can do magical thiiiings. Never call wordLoc that doesn't exist. Yes, duh, you can't call wordLoc + 1. That is dumb. You CAN, however, call wordLoc - 1. Combos, babyyyyy. TBI.
 
-  if(input.at(wordLoc) == "Attack" || input.at(wordLoc) == "attack")
+	//Attacks//
+	
+  if(wordInMotion())
   {
-	if(input.at(wordLoc - 1) == "combo")
+	if(eval == "spear")
 	{
-	  p2->ChangeHP(-4 * p1->GetDMG());
-	} else
+	  throwSpd = &slowSpd;
+	  rotSpd = &noTate;
+	}
+	
+	if(eval == "cannonball")
 	{
-	  p1->ChangeHP(-1 * p1->GetDMG());
-	  cout << p2->GetHP();
+	  throwSpd = &vSlowSpd;
+	  rotSpd = &noTate;
 	}
   }
-  
-  //Status Effects//
-  
-  
-  //Defense//
-  
-  if(input.at(wordLoc) == "Shield" || input.at(wordLoc) == "shield")
+ 
+  if(!wordInMotion())
   {
-  }
-  
-  if(input.at(wordLoc) == "Heal" || input.at(wordLoc) == "heal")
-  {
-	p1->ChangeHP(5);
-  }
-  
-  if(input.at(wordLoc) == "poison" || input.at(wordLoc) == "venom")
-  {
-	p2->SetEffects(Player::Poisoned);
-  }
-  
-  if(input.at(wordLoc) == "Memes" || input.at(wordLoc) == "memes")
-  {
-	music[currentSong].stop();
-	currentSong = (int)ofRandom(1, 5);
-	music[currentSong].play();
-  }
-  
-  if(input.at(wordLoc) == "no more memes" || input.at(wordLoc) == "nomorememes")
-  {
-	if(currentSong != 0)
+	if(eval == "attack")
+	{
+	  if(evalPrev == "combo")
+	  {
+		p2->ChangeHP(-4 * p1->GetDMG());
+	  } else
+	  {
+		p2->ChangeHP(-1 * p1->GetDMG());
+		cout << p2->GetHP();
+	  }
+	}
+	
+	//Status Effects//
+	
+	if(eval == "poison" || eval == "venom" || eval == "toxic")
+	{
+	  p2->SetEffects(Player::Poisoned);
+	}
+	
+	
+	//Defense//
+	
+	if(eval == "shield")
+	{
+	}
+	
+	if(eval == "heal")
+	{
+	  p1->ChangeHP(5);
+	}
+	
+	if(eval == "memes")
 	{
 	  music[currentSong].stop();
-	  currentSong = 0;
+	  currentSong = (int)ofRandom(1, 5);
 	  music[currentSong].play();
 	}
-  }
-  
-  if(input.at(wordLoc) == "murder") //debug
-  {
-	p2->ChangeHP(-p2->GetHP());
-  }
-  
-  
-  if(keyPress == "Fus ro dah" || keyPress == "fus ro dah" || keyPress == "fusrodah" || keyPress == "FUSRODAH" || keyPress == "Fusrodah")
-  {
 	
+	if(eval == "nomorememes" || eval == "no more memes")
+	{
+	  if(currentSong != 0)
+	  {
+		music[currentSong].stop();
+		currentSong = 0;
+		music[currentSong].play();
+	  }
+	}
+	
+	if(eval == "murder") //debug
+	{
+	  p2->ChangeHP(-p2->GetHP());
+	}
+	
+	
+	if(caseEval == "r") //B U L L E T
+	{
+	  //Not Much Damage, Fast Fire
+	}
+	
+	if(eval == "-->" || eval == "spear") //spear
+	{
+	  p2->ChangeHP(-10);
+	  ResetMotion();
+	}
+	
+	if(eval == "cannonball")
+	{
+	  p2->ChangeHP(-25);
+	  ResetMotion();
+	}
+	
+	if(caseEval == "o")
+	{
+	  //Long Cooldown, Slow Fire Rate, High Damage
+	}
+	
+	if(eval == "-|==>")
+	{
+	  //S W O R D
+	  //Breaks shield, super low damage
+	}
+	
+	if(eval == "/\\/ /_\\")
+	{
+	  // N O
+	  //High cool down, kill enemy word
+	}
+	
+	if(eval == ">-|-o")
+	{
+	  //Tosses a slave???
+	}
+	
+	if(eval == "(-)")
+	{
+	  //Chance of heal, but also of long poison!!
+	}
+	
+	keyPress.clear();
   }
-  
-  keyPress.clear();
-
-}
-
-void ofApp::mousePressed(int x, int y, int button)
-{
-
-}
-
-                                                                
-void ofApp::mouseReleased(int x, int y, int button)
-{
-
 }
 
 void ofApp::SendWord()
@@ -255,16 +330,38 @@ void ofApp::SendWord()
   ofSetColor(255, 0, 0);
   ofDrawBitmapStringHighlight(input.at(wordLoc), 0, 0);
   ofPopMatrix();
+  EvaluateWord();
   
-  if(stringPos.x < p2->GetPos().x - 200)
-	stringPos.x += 10;
-  else if(stringPos.x > p2->GetPos().x - 200)
+  if(wordInMotion())
   {
-	EvaluateWord();
+	stringPos.x += *throwSpd;
+	rot += *rotSpd;
+  }
+  else
+  {
 	stringPos.x = p1->GetPos().x;
 	wordSubmit = false;
   }
 }
+
+bool ofApp::wordInMotion()
+{
+  if(stringPos.x < p2->GetPos().x - ofGetWidth()/7.2)
+  {
+	return true;
+  } else return false;
+}
+
+void ofApp::ResetMotion()
+{
+  rotSpd = &rotate;
+  throwSpd = &spd;
+}
+
+//void ofApp::ChangeMotion(float *speed, float *rotate)
+//{
+//	*speed = *s
+//}
 
 void ofApp::InitializeState(States newState)
 {
@@ -287,24 +384,28 @@ void ofApp::InitializeState(States newState)
 void ofApp::ServerSetup()
 {
     s.Create();
-    s.SetEnableBroadcast(true);
-    s.Connect("127.0.0.1", 12345);
+	s.SetEnableBroadcast(true);
+    s.Connect("127.0.0.1", 23339);
     s.SetNonBlocking(true);
 }
 
 void ofApp::Server()
 {
-  string word = keyPress;
-  s.Send(keyPress.c_str(), keyPress.length());
+  string status(to_string(p1->GetEffects()));
+  string msg(keyPress);
+  string send(status + delimiter[0] + msg);
+  if(ofGetKeyPressed(OF_KEY_RETURN))
+  {
+	s.Send(send.c_str(), send.length());
+  }
 }
 
 void ofApp::Client()
 {
-  char text[30];
-  c.Receive(text, 30);
-  string data = text;
-  opponentInput.push_back(text);
+  char receive[100];
+  s.Receive(receive, 100);
+  string data(receive);
+  string status = data.substr(0, data.find_first_of(delimiter[0]) - 1);
+  string word = data.substr(data.find_first_of(delimiter[0]) + delimiter[0].length(), data.length());
 }
-
-
 

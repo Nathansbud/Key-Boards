@@ -11,11 +11,8 @@ class ofApp : public ofBaseApp{
 		void setup();
 		void update();
 		void draw();
-
 		void keyPressed(int key);
-		void mousePressed(int x, int y, int button);
-		void mouseReleased(int x, int y, int button);
-		
+
 		void EvaluateWord();
 		void SendWord();
 		
@@ -27,7 +24,7 @@ class ofApp : public ofBaseApp{
 
 		Player qwerty = Player(1, 100, 1.0);
 		Player azerty = Player(2, 100, 1.0);
-		
+
 		Player *p1 = &qwerty;
 		Player *p2 = &azerty;
 		
@@ -37,15 +34,36 @@ class ofApp : public ofBaseApp{
 		string keyPress;
 		string ip;
 		
+		bool wordInMotion();
+		
 		ofVec2f stringPos = qwerty.GetPos();
 	
 		ofSoundPlayer music[5];
 				
 		void ServerSetup();
+		void ClientSetup();
+
 		void Server();
 		void Client();
 		
-		ofxUDPManager s;
-		ofxUDPManager c;
 		
+		float spd; //Word Throw Spd
+		float fastSpd;
+		float slowSpd;
+		float vSlowSpd;
+		float vFastSpd;
+		
+		float *throwSpd = &spd;
+		
+		float rot;
+		float rotate = 12;
+		float fastTate = rotate*2;
+		float slowTate = rotate/2;
+		float noTate = 0;
+		
+		float *rotSpd = &rotate;
+		
+		void ResetMotion();
+		
+		ofxUDPManager s;
 };

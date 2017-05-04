@@ -39,7 +39,7 @@ void Player::Draw()
 {
   ofNoFill();
   if(_player == 1)
-	p1.draw(GetPos());
+	p1.draw(GetPos()); //240, 240)
   if(_player == 2)
 	p2.draw(GetPos());
 }
@@ -64,7 +64,6 @@ void Player::CheckStatusEffects()
 {
 //  static int ticks = 300;
   if(isPoisoned())
-	
 	ChangeHP(-5);
   if(isBurning())
 	ChangeHP(-2);
@@ -79,46 +78,22 @@ void Player::SetStats(int hp, float dmg)
 
 bool Player::isPoisoned()
 {
-  if(_statusFlags & Poisoned)
-  {
-	return true;
-  } else
-  {
-	return false;
-  }
+  return _statusFlags & Poisoned ? 1 : 0;
 }
 
 bool Player::isStunned()
 {
-  if(_statusFlags & Stunned)
-  {
-	return true;
-  } else
-  {
-	return false;
-  }
+  return _statusFlags & Stunned ? 1 : 0;
 }
 
 bool Player::isBleeding()
 {
-  if(_statusFlags & Bleeding)
-  {
-	return true;
-  } else
-  {
-	return false;
-  }
+  return _statusFlags & Bleeding ? 1 : 0;
 }
 
 bool Player::isBurning()
 {
-  if(_statusFlags & Burning)
-  {
-	return true;
-  } else
-  {
-	return false;
-  }
+  return _statusFlags & Burning ? 1 : 0;
 }
 
 void Player::SetEffects(StatusEffects effects)

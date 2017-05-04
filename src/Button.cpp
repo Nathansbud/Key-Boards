@@ -13,7 +13,6 @@ float _posX, _posY;
 string _labelText;
 float _buttonWidth, _buttonHeight;
 
-
 Button::Button(string labelText, float posX, float posY, int goesTo, string buttonType)
 {
    _goesTo = goesTo;

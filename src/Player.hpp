@@ -25,9 +25,7 @@ class Player
 	bool isStunned();
 	bool isBurning();
 	bool isBleeding();
-	
-	void CheckStatusEffects();
-	
+  
 	int GetHP() {return _hp;}
 	float GetDMG() {return _damage;}
 	float GetMoney() {return _money;}
@@ -50,6 +48,7 @@ class Player
   private:
 	void SetPos();
 	void SetStats(int hp, float damage);
+	void CheckStatusEffects();
 	
 	int _statusFlags;
 	int _hp = 150;
