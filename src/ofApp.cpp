@@ -30,14 +30,9 @@ int currentSong;
 vector<string> input;
 vector<string> opponentInput;
 long nanosecond = 100000000;
-static int ticks;
 static string delimiter[] = {"1:", "2:","3:","4:"};
-
 locale loc;
-//string delimiter = "|";
-
-//std::chrono::duration<3> poison;
-//chrono::duration<std::chrono::seconds> wait(5);
+int cooling;
 
 void ofApp::setup()
 {
@@ -73,7 +68,7 @@ void ofApp::update()
   p1->Update();
   p2->Update();
   
-  if(p2->GetHP() == 0)
+  if(p2->GetHP() <= 0)
   {
 	state = Win;
   }
@@ -101,11 +96,9 @@ void ofApp::draw()
 	ofDrawBitmapStringHighlight("HP: " + p2->HP, 1250, 450);
 	ofDrawBitmapStringHighlight("S E R V E R", ofGetWidth()/2, ofGetHeight()/10);
 	
-	
-	
 	if(wordSubmit)
 	{
-	  SendWord();
+	  SendWord(wordLoc);
 	}
 	
   }
@@ -137,14 +130,17 @@ void ofApp::keyPressed(int key)
 		
 	  case OF_KEY_RETURN:
 	  {
-		if(keyPress != "")
+		if(keyPress != "" && !p1->isStunned())
 		{
+		  p1->SetEffects(Player::Stunned, 1);
 		  rot = 0;
 		  wordLoc += 1; //Increases wordLoc for any function trying to call it
+		  thisWord = wordLoc;
 		  input.push_back(keyPress);
 		  wordSubmit = true;
 		  Server();
 		  keyPress.clear();
+		  
 		}
 		break;
 	  }
@@ -159,7 +155,7 @@ void ofApp::keyPressed(int key)
 		
 	  default:
 	  {
-		if(key >= 32 && key <= 126 && keyPress.length() < 30)
+		if(key >= 32 && key <= 126 && keyPress.length() < 30 && !p1->isStunned())
 		{
 		  keyPress += (char)key;
 		}
@@ -180,24 +176,24 @@ void ofApp::keyPressed(int key)
   }
 }
 
-void ofApp::EvaluateWord()
+void ofApp::EvaluateWord(int index)
 {
-	string eval;
-	string evalPrev;
-	string caseEval = input.at(wordLoc);
-	string caseEvalPrev = input.at(wordLoc);
+  string eval;
+  string evalPrev;
+  string caseEval = input.at(index);
+  string caseEvalPrev = input.at(index);
 	
-	for (string::size_type i=0; i < input.at(wordLoc).length(); ++i)
-	{
-	   eval += std::tolower(input.at(wordLoc)[i],loc);
+  for (string::size_type i=0; i < input.at(index).length(); ++i)
+  {
+	eval += std::tolower(input.at(index)[i],loc);
   //	 if(eval.at(i) == ' ') //ignore space code?
   //	 {
   //	
   //	 }
 	}
 	
-	for(string::size_type i=0; i < input.at(wordLoc - 1).length(); ++i)
-		evalPrev += std::tolower(input.at(wordLoc - 1)[i], loc);
+	for(string::size_type i=0; i < input.at(index - 1).length(); ++i)
+		evalPrev += std::tolower(input.at(index - 1)[i], loc);
 
 	//Note to future me: you can do magical thiiiings. Never call wordLoc that doesn't exist. Yes, duh, you can't call wordLoc + 1. That is dumb. You CAN, however, call wordLoc - 1. Combos, babyyyyy. TBI.
 
@@ -207,7 +203,7 @@ void ofApp::EvaluateWord()
   {
 	if(eval == "spear")
 	{
-	  throwSpd = &slowSpd;
+	  throwSpd = &fastSpd;
 	  rotSpd = &noTate;
 	}
 	
@@ -228,7 +224,7 @@ void ofApp::EvaluateWord()
 	  } else
 	  {
 		p2->ChangeHP(-1 * p1->GetDMG());
-		cout << p2->GetHP();
+//		cout << p2->GetHP();
 	  }
 	}
 	
@@ -236,9 +232,18 @@ void ofApp::EvaluateWord()
 	
 	if(eval == "poison" || eval == "venom" || eval == "toxic")
 	{
-	  p2->SetEffects(Player::Poisoned);
+	  p2->SetEffects(Player::Poisoned, 3);
 	}
 	
+	if(eval == "burn" || eval == "fire")
+	{
+	  p2->SetEffects(Player::Burning, 5);
+	}
+	
+	if(eval == "antidote")
+	{
+	  p1->RemoveEffects(Player::Poisoned);
+	}
 	
 	//Defense//
 	
@@ -256,6 +261,11 @@ void ofApp::EvaluateWord()
 	  music[currentSong].stop();
 	  currentSong = (int)ofRandom(1, 5);
 	  music[currentSong].play();
+	}
+	
+	if(eval == "stun" || eval == "daze")
+	{
+	  p1->SetEffects(Player::Stunned, 2);
 	}
 	
 	if(eval == "nomorememes" || eval == "no more memes")
@@ -318,19 +328,27 @@ void ofApp::EvaluateWord()
 	  //Chance of heal, but also of long poison!!
 	}
 	
+	/* Debug */
+	
+	if(eval == "restart")
+	{
+	  p1->Restart();
+	  p2->Restart();
+	}
+	
 	keyPress.clear();
   }
 }
 
-void ofApp::SendWord()
+void ofApp::SendWord(int index)
 {
+  EvaluateWord(index);
   ofPushMatrix();
   ofTranslate(stringPos + 200);
   ofRotateZ(rot);
   ofSetColor(255, 0, 0);
-  ofDrawBitmapStringHighlight(input.at(wordLoc), 0, 0);
+  ofDrawBitmapStringHighlight(input.at(index), 0, 0);
   ofPopMatrix();
-  EvaluateWord();
   
   if(wordInMotion())
   {

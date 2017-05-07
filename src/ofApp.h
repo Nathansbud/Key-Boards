@@ -13,13 +13,13 @@ class ofApp : public ofBaseApp{
 		void draw();
 		void keyPressed(int key);
 
-		void EvaluateWord();
-		void SendWord();
+		void EvaluateWord(int index);
+		void SendWord(int index);
 		
   		enum States {Title, Info, Game, Win, GameOver};
 		States state;
 
-  		void SetState(States newState) {state == newState;}
+  		void SetState(States newState) {state = newState;}
 		void InitializeState(States newState);
 
 		Player qwerty = Player(1, 100, 1.0);
@@ -32,6 +32,7 @@ class ofApp : public ofBaseApp{
 		Ground ground = Ground();
 		
 		string keyPress;
+		string thisWord;
 		string ip;
 		
 		bool wordInMotion();
@@ -39,13 +40,15 @@ class ofApp : public ofBaseApp{
 		ofVec2f stringPos = qwerty.GetPos();
 	
 		ofSoundPlayer music[5];
-				
+  
+		bool Cooldown(int duration);
+  
 		void ServerSetup();
 		void ClientSetup();
 
 		void Server();
 		void Client();
-		
+	  
 		
 		float spd; //Word Throw Spd
 		float fastSpd;
@@ -66,4 +69,6 @@ class ofApp : public ofBaseApp{
 		void ResetMotion();
 		
 		ofxUDPManager s;
+		
+		int timer;
 };

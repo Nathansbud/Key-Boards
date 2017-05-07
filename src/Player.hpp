@@ -20,6 +20,7 @@ class Player
 	void Update();
 	void Draw();
 	void InflictStatusEffect();
+	void Restart();
 	
 	bool isPoisoned();
 	bool isStunned();
@@ -42,9 +43,9 @@ class Player
 	  Bleeding = 1 << 3
 	};
 	
-	void SetEffects(StatusEffects effects);
+	void SetEffects(StatusEffects effects, int duration);
 	void RemoveEffects(StatusEffects effects);
-		
+  
   private:
 	void SetPos();
 	void SetStats(int hp, float damage);
@@ -61,6 +62,10 @@ class Player
 	bool _burning;
 	bool _stunned;
 	void SetHP(int amount) {_hp = amount;}
+	int poisonTimer;
+	int burnTimer;
+	int stunTimer;
+	int _effectDuration;
 };
 
 #endif /* Player_hpp */
