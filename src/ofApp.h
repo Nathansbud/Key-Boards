@@ -23,7 +23,7 @@ class ofApp : public ofBaseApp{
 		void InitializeState(States newState);
 
 		Player qwerty = Player(1, 100, 1.0);
-		Player azerty = Player(2, 100, 1.0);
+		Player azerty = Player(1, 100, 1.0);
 
 		Player *p1 = &qwerty;
 		Player *p2 = &azerty;

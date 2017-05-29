@@ -45,6 +45,7 @@ class Player
 	
 	void SetEffects(StatusEffects effects, int duration);
 	void RemoveEffects(StatusEffects effects);
+	void SetPlayerNumber(int pNum) {_player = pNum;}
   
   private:
 	void SetPos();

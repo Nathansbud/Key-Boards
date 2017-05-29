@@ -33,11 +33,12 @@ long nanosecond = 100000000;
 static string delimiter[] = {"1:", "2:","3:","4:"};
 locale loc;
 int cooling;
+int player;
 
 void ofApp::setup()
 {
   ofSetFrameRate(60);
-  state = Game; //Should be changed to Title once implemented
+  InitializeState(Title);
   currentSong = 0;
   spd = ofGetWidth()*0.007;
   slowSpd = spd/2;
@@ -78,6 +79,35 @@ void ofApp::draw()
 {
   
   /*[Game]*/
+  if(state == Title)
+  {
+	ofBackground(0);
+	ofDrawBitmapString("Would you like to be Player 1 (Left) or 2? (Right)? Press the corresponding key!" ,  ofGetWidth()/2 - ofGetWidth()/4, ofGetHeight()/2);
+	
+	if(ofGetKeyPressed('1'))
+	{
+	  player = 1;
+	}
+	
+	if(ofGetKeyPressed('2'))
+	{
+	  player = 2;
+	}
+	
+	
+	if(player != 0)
+	  ofDrawBitmapString("You have selected: Player " + to_string(player) + "\nIs this okay? (Press Enter)", ofGetWidth()/2 - ofGetWidth()/5, ofGetHeight()/2 + ofGetHeight()/9);
+	
+	if(ofGetKeyPressed(OF_KEY_RETURN))
+	{
+	  SetState(Game);
+	  p1->SetPlayerNumber(player);
+	  if(player == 1) p2->SetPlayerNumber(2);
+	  else p2->SetPlayerNumber(1);
+	}
+	
+	
+  }
   
   if(state == Game)
   {
@@ -100,7 +130,6 @@ void ofApp::draw()
 	{
 	  SendWord(wordLoc);
 	}
-	
   }
 
   if(state == Win)
@@ -184,16 +213,10 @@ void ofApp::EvaluateWord(int index)
   string caseEvalPrev = input.at(index);
 	
   for (string::size_type i=0; i < input.at(index).length(); ++i)
-  {
-	eval += std::tolower(input.at(index)[i],loc);
-  //	 if(eval.at(i) == ' ') //ignore space code?
-  //	 {
-  //	
-  //	 }
-	}
+	eval += tolower(input.at(index)[i],loc);
 	
-	for(string::size_type i=0; i < input.at(index - 1).length(); ++i)
-		evalPrev += std::tolower(input.at(index - 1)[i], loc);
+  for(string::size_type i=0; i < input.at(index - 1).length(); ++i)
+	evalPrev += tolower(input.at(index - 1)[i], loc);
 
 	//Note to future me: you can do magical thiiiings. Never call wordLoc that doesn't exist. Yes, duh, you can't call wordLoc + 1. That is dumb. You CAN, however, call wordLoc - 1. Combos, babyyyyy. TBI.
 
@@ -265,7 +288,7 @@ void ofApp::EvaluateWord(int index)
 	
 	if(eval == "stun" || eval == "daze")
 	{
-	  p1->SetEffects(Player::Stunned, 2);
+	  p2->SetEffects(Player::Stunned, 2);
 	}
 	
 	if(eval == "nomorememes" || eval == "no more memes")
@@ -278,15 +301,15 @@ void ofApp::EvaluateWord(int index)
 	  }
 	}
 	
-	if(eval == "murder") //debug
-	{
-	  p2->ChangeHP(-p2->GetHP());
-	}
-	
-	
+//	if(eval == "murder") //debug
+//	{
+//	  p2->ChangeHP(-p2->GetHP());
+//	}
+//	
+//	
 	if(caseEval == "r") //B U L L E T
 	{
-	  //Not Much Damage, Fast Fire
+	  p2->ChangeHP(-1);
 	}
 	
 	if(eval == "-->" || eval == "spear") //spear
@@ -401,10 +424,10 @@ void ofApp::InitializeState(States newState)
 
 void ofApp::ServerSetup()
 {
-    s.Create();
-	s.SetEnableBroadcast(true);
-    s.Connect("127.0.0.1", 23339);
-    s.SetNonBlocking(true);
+  s.Create();
+  s.SetEnableBroadcast(true);
+  s.Connect("127.0.0.1", 23339);
+  s.SetNonBlocking(true);
 }
 
 void ofApp::Server()
@@ -424,6 +447,7 @@ void ofApp::Client()
   s.Receive(receive, 100);
   string data(receive);
   string status = data.substr(0, data.find_first_of(delimiter[0]) - 1);
-  string word = data.substr(data.find_first_of(delimiter[0]) + delimiter[0].length(), data.length());
+  string word = data.substr(data.find_first_of(delimiter[1]) + delimiter[1].length(), data.length());
+  opponentInput.push_back(word);
 }
 
